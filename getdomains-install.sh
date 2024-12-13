@@ -641,10 +641,10 @@ start () {
 EOF
 cat << 'EOF' >> /etc/init.d/getdomains
     count=0
-    mkdir -p /tmp/dnsmasq.d
+    mkdir -p /etc/dnsmasq.d
     while true; do
         if curl -m 3 github.com; then
-            curl -f $DOMAINS --output /tmp/dnsmasq.d/domains.lst
+            curl -f $DOMAINS --output /etc/dnsmasq.d/domains.lst
             break
         else
             echo "GitHub is not available. Check the internet availability [$count]"
@@ -652,7 +652,7 @@ cat << 'EOF' >> /etc/init.d/getdomains
         fi
     done
 
-    if dnsmasq --conf-file=/tmp/dnsmasq.d/domains.lst --test 2>&1 | grep -q "syntax check OK"; then
+    if dnsmasq --conf-file=/etc/dnsmasq.d/domains.lst --test 2>&1 | grep -q "syntax check OK"; then
         /etc/init.d/dnsmasq restart
     fi
 }

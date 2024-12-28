@@ -323,6 +323,7 @@ dnsmasqfull() {
         opkg remove dnsmasq && opkg install dnsmasq-full --cache /tmp/
 
         [ -f /etc/config/dhcp-opkg ] && cp /etc/config/dhcp /etc/config/dhcp-old && mv /etc/config/dhcp-opkg /etc/config/dhcp
+        uci set dhcp.@dnsmasq[0].confdir='/tmp/dnsmasq.d'
 fi
 }
 
@@ -641,10 +642,10 @@ start () {
 EOF
 cat << 'EOF' >> /etc/init.d/getdomains
     count=0
-    mkdir -p /etc/dnsmasq.d
+    # mkdir -p /etc/dnsmasq.d
     while true; do
         if curl -m 3 github.com; then
-            curl -f $DOMAINS --output /etc/dnsmasq.d/domains.lst
+            curl -f $DOMAINS --output /tmp/dnsmasq.d/domains.lst
             break
         else
             echo "GitHub is not available. Check the internet availability [$count]"
@@ -652,7 +653,7 @@ cat << 'EOF' >> /etc/init.d/getdomains
         fi
     done
 
-    if dnsmasq --conf-file=/etc/dnsmasq.d/domains.lst --test 2>&1 | grep -q "syntax check OK"; then
+    if dnsmasq --conf-file=/tmp/dnsmasq.d/domains.lst --test 2>&1 | grep -q "syntax check OK"; then
         /etc/init.d/dnsmasq restart
     fi
 }
@@ -962,7 +963,7 @@ printf "\033[34;1mVersion: $OPENWRT_RELEASE\033[0m\n"
 VERSION_ID=$(echo $VERSION | awk -F. '{print $1}')
 
 if [ "$VERSION_ID" -ne 24 ]; then
-    printf "\033[31;1mScript only support OpenWrt 23.05\033[0m\n"
+    printf "\033[31;1mScript only support OpenWrt 23.05 and 24.\033[0m\n"
     echo "For OpenWrt 21.02 and 22.03 you can:"
     echo "1) Use ansible https://github.com/itdoginfo/domain-routing-openwrt"
     echo "2) Configure manually. Old manual: https://itdog.info/tochechnaya-marshrutizaciya-na-routere-s-openwrt-wireguard-i-dnscrypt/"

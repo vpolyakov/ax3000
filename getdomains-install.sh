@@ -318,6 +318,9 @@ dnsmasqfull() {
     if opkg list-installed | grep -q dnsmasq-full; then
         printf "\033[32;1mdnsmasq-full already installed\033[0m\n"
     else
+        opkg install pbr luci-app-pbr
+        uci set pbr.config.enabled=1; uci commit pbr;
+
         printf "\033[32;1mInstalled dnsmasq-full\033[0m\n"
         cd /tmp/ && opkg download dnsmasq-full
         opkg remove dnsmasq && opkg install dnsmasq-full --cache /tmp/

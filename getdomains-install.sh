@@ -327,7 +327,8 @@ dnsmasqfull() {
 
         [ -f /etc/config/dhcp-opkg ] && cp /etc/config/dhcp /etc/config/dhcp-old && mv /etc/config/dhcp-opkg /etc/config/dhcp
         uci set dhcp.@dnsmasq[0].confdir='/tmp/dnsmasq.d'
-fi
+        uci commit dhcp
+    fi
 }
 
 remove_forwarding() {
